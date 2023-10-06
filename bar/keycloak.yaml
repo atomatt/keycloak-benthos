@@ -1,0 +1,18 @@
+# Cache the Keycloak realm's public key for authz checks
+
+input:
+  generate:
+    interval: 5s
+    mapping: "{}"
+
+pipeline:
+  processors:
+    - http:
+        url: http://keycloak:8080/realms/master
+        verb: get
+    - mapping: root = this.public_key
+
+output:
+  cache:
+    target: keycloak
+    key: public_key

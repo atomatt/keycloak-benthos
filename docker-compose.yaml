@@ -1,0 +1,45 @@
+services:
+  foo:
+    image: jeffail/benthos
+    command:
+      - -w
+      - streams
+      - /streams/foo.yaml
+    environment:
+      - KEYCLOAK_CLIENT_SECRET=
+    volumes:
+      - ./foo:/streams
+  bar:
+    image: jeffail/benthos
+    command:
+      - -w
+      - -r
+      - /streams/caches.yaml
+      - streams
+      - /streams/bar.yaml
+      - /streams/keycloak.yaml
+    volumes:
+      - ./bar:/streams
+    ports:
+      - 4195:4195
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    command:
+      - start-dev
+      - --db=postgres
+      - --db-url=jdbc:postgresql://postgres/postgres
+      - --db-username=postgres
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres:/var/lib/postgresql
+
+volumes:
+  postgres: {}

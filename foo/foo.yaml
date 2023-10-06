@@ -1,0 +1,17 @@
+input:
+  generate:
+    interval: 5s
+    mapping: "{}"
+
+pipeline:
+  processors:
+    - http:
+        url: http://bar:4195/bar
+        oauth2:
+          enabled: true
+          client_key: foo
+          client_secret: ${KEYCLOAK_CLIENT_SECRET}
+          token_url: http://keycloak:8080/realms/master/protocol/openid-connect/token
+
+output:
+  stdout: {}

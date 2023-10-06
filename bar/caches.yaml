@@ -1,0 +1,3 @@
+cache_resources:
+  - label: keycloak
+    memory: {}

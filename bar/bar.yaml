@@ -1,0 +1,24 @@
+# Pretend server with a basic authz check (just returns the authz check result in reality).
+
+input:
+  http_server:
+    path: /
+
+pipeline:
+  processors:
+    - cache:
+        resource: keycloak
+        operator: get
+        key: public_key
+    - mapping: |
+        let public_key_pem = "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----".format(content())
+
+        let token = meta("Authorization").split("Bearer ").index(1)
+        let claims = $token.parse_jwt_rs256($public_key_pem)
+        let roles = $claims.get("resource_access.bar.roles") | []
+
+        roles = $roles
+        authorized = $roles.contains("api")
+
+output:
+  sync_response: {}
